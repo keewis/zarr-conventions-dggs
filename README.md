@@ -114,6 +114,8 @@ The following values are possible:
 
 The ellipsoid object is modelled after [`projjson`](https://proj.org/en/stable/specifications/projjson.html)'s definition. It can describe either a sphere or an ellipsoid.
 
+In all cases, the **name** must exactly correspond to the names used by the [proj](https://proj.org) library.
+
 #### Sphere
 
 |            | Type     | Description                       | Required |
