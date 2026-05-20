@@ -2,14 +2,16 @@
 
 - **UUID**: 7b255807-140c-42ca-97f6-7a1cfecdbc38
 - **Name**: dggs
-- **Schema URL**: "https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json"
-- **Spec URL**: "https://github.com/zarr-conventions/dggs/blob/v1/README.md"
+- **Schema URL**: https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json
+- **Spec URL**: https://github.com/zarr-conventions/dggs/blob/v1/README.md
 - **Extension Maturity Classification**: Proposal
 - **Owner**: @keewis
 
 ## Description
 
 This convention describes a JSON object that encodes the coordinate and grid parameters of a discrete global grid system (DGGS) under the `dggs` key in the attributes of zarr groups and arrays.
+
+It is inspired by the CF conventions' `healpix` grid mapping (first included in version 1.13), but deliberately makes different choices in some cases to be more broadly useful in the zarr ecosystem.
 
 ## Inheritance Model
 
@@ -41,7 +43,7 @@ Object representing the conrete instance of the discrete global grid system.
 - **Type**: `object`
 - **Required**: &#10003; Yes
 
-This field SHALL describe the concrete instance of the discrete global grid system. See the [DGGS Object](#dggs-object) section below for details.
+This field MUST describe the concrete instance of the discrete global grid system. See the [DGGS Object](#dggs-object) section below for details.
 
 ### DGGS Object
 
@@ -52,7 +54,7 @@ This field SHALL describe the concrete instance of the discrete global grid syst
 | **ellipsoid**         | `object`  | The ellipsoid used as a reference body.      | &#10005; No  | [ellipsoid](#ellipsoid)                 |
 | **spatial_dimension** | `string`  | Name of the spatial dimension                | &#10003; Yes | [spatial_dimension](#spatial_dimension) |
 | **coordinate**        | `string`  | Name of the coordinate                       | &#10005; No  | [coordinate](#coordinate)               |
-| **compression**       | `string`  | Compression type of the coordinate           | &#10003; Yes | [compression](#compression)             |
+| **compression**       | `string`  | Compression type of the coordinate           | Conditional  | [compression](#compression)             |
 
 Additional DGGS-specific parameters are allowed.
 
@@ -79,7 +81,7 @@ The ellipsoid describes the reference system of the DGGS. See the [ellipsoid obj
 - **Type**: `object`
 - **Required**: &#10005; No
 
-If not given, a sphere with a radius of `6370997 m` SHALL be assumed.
+If not given, a sphere with a radius of `6370997 m` MUST be assumed.
 
 #### spatial_dimension
 
@@ -97,12 +99,12 @@ The name of spatial dimension.
 
 #### compression
 
-`compression` describes the cell id compression method chosen. It SHALL only be provided if the `coordinate` was provided. If `refinement_level` is `null`, `compression` SHALL be `"none"`.
+`compression` describes the cell id compression method chosen. It MUST only be provided if the `coordinate` was provided. If `refinement_level` is `null`, `compression` MUST be `"none"`.
 
-Uncompressing the cell ids SHALL result in an array of the same length as the `spatial_dimension`.
+Uncompressing the cell ids MUST result in an array of the same length as the `spatial_dimension`.
 
 - **Type**: `string`
-- **Required**: &#10005; No
+- **Required**: Conditional
 
 The following values are possible:
 
@@ -156,7 +158,7 @@ Uncompressed subdomain:
       "indexing_scheme": "nested",
       "spatial_dimension": "cells",
       "ellipsoid": {
-        "name": "wgs84",
+        "name": "WGS84",
         "semi_major_axis": 6378137.0,
         "inverse_flattening": 298.257223563
       },
