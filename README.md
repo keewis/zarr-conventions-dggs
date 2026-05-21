@@ -56,7 +56,7 @@ This field MUST describe the concrete instance of the discrete global grid syste
 | **coordinate**        | `string`  | Name of the coordinate                       | &#10005; No  | [coordinate](#coordinate)               |
 | **compression**       | `string`  | Compression type of the coordinate           | Conditional  | [compression](#compression)             |
 
-Additional DGGS-specific parameters are allowed.
+Additional DGGS-specific parameters are allowed (see [DGGS specific parameters](dggs-specific-parameters)).
 
 #### name
 
@@ -118,21 +118,35 @@ The ellipsoid object is modelled after [`projjson`](https://proj.org/en/stable/s
 
 #### Sphere
 
-|            | Type     | Description                       | Required |
-| ---------- | -------- | --------------------------------- | -------- |
-| **name**   | `string` | Human-readable name of the sphere | Yes      |
-| **radius** | `number` | The radius of the sphere          | Yes      |
+|            | Type     | Description                       | Required     |
+| ---------- | -------- | --------------------------------- | ------------ |
+| **name**   | `string` | Human-readable name of the sphere | &#10003; Yes |
+| **radius** | `number` | The radius of the sphere          | &#10003; Yes |
 
 #### Ellipsoid
 
-|                        | Type     | Description                             | Required    |
-| ---------------------- | -------- | --------------------------------------- | ----------- |
-| **name**               | `string` | Human-readable name of the ellipsoid    | Yes         |
-| **semi_major_axis**    | `number` | The semimajor axis of the ellipsoid     | Yes         |
-| **semi_minor_axis**    | `number` | The semiminor axis of the ellipsoid     | Conditional |
-| **inverse_flattening** | `number` | The inverse flattening of the ellipsoid | Conditional |
+|                        | Type     | Description                             | Required     |
+| ---------------------- | -------- | --------------------------------------- | ------------ |
+| **name**               | `string` | Human-readable name of the ellipsoid    | &#10003; Yes |
+| **semi_major_axis**    | `number` | The semimajor axis of the ellipsoid     | &#10003; Yes |
+| **semi_minor_axis**    | `number` | The semiminor axis of the ellipsoid     | Conditional  |
+| **inverse_flattening** | `number` | The inverse flattening of the ellipsoid | Conditional  |
 
 `semi_minor_axis` and `inverse_flattening` are mutually exclusive.
+
+### DGGS specific parameters
+
+Some DGGS have parameters other than `refinement_level`, which can be added to the `dggs` object. In this section are standardized extensions for common DGGS
+
+#### HEALPix
+
+The HEALPix DGGS (`"name": "healpix"`) has one additional required parameter:
+
+|                     | Type     | Description             | Required     |
+| ------------------- | -------- | ----------------------- | ------------ |
+| **indexing_scheme** | `string` | HEALPix indexing scheme | &#10003; Yes |
+
+The **indexing_scheme** parameter describes the space-filling curve used to index the cells. For values other than `ring` or `nested` the `refinement_level` must be `null`. Known values are: `nested`, `ring`, `zuniq`, `nuniq`.
 
 ## Examples
 
