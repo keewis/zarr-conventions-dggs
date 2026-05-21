@@ -89,7 +89,7 @@
         },
         "refinement_level": {
           "type": ["integer", "null"],
-          "description": "The refinement level (depth/order) as an unsigned integer. Can be null if coordinate is variable-sized",
+          "description": "The refinement level (depth/order) as an unsigned integer. Can be null if cells are variable-sized.",
           "minimum": 0
         },
         "ellipsoid": {
@@ -110,7 +110,43 @@
         }
       },
       "required": ["name", "refinement_level", "spatial_dimension"],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "description": "special cases for the HEALPix DGGS",
+          "if": {
+            "properties": {
+              "name": { "const": "healpix" }
+            }
+          },
+          "then": {
+            "oneOf": [
+              {
+                "properties": {
+                  "indexing_scheme": {
+                    "enum": ["nested", "ring"]
+                  },
+                  "refinement_level": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 29
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "indexing_scheme": {
+                    "type": "string",
+                    "pattern": "^[a-z_]*uniq$"
+                  },
+                  "refinement_level": { "const": null }
+                }
+              }
+            ],
+            "required": ["indexing_scheme"]
+          }
+        }
+      ]
     },
     "ellipsoidObject": {
       "type": "object",
@@ -121,7 +157,7 @@
           "description": "Human-readable name of the ellipsoid"
         },
         "radius": {
-          "type": "string",
+          "type": "number",
           "description": "The radius of the sphere in meters",
           "minimum": 0
         },

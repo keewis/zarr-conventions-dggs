@@ -2,14 +2,16 @@
 
 - **UUID**: 7b255807-140c-42ca-97f6-7a1cfecdbc38
 - **Name**: dggs
-- **Schema URL**: "https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json"
-- **Spec URL**: "https://github.com/zarr-conventions/dggs/blob/v1/README.md"
+- **Schema URL**: https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json
+- **Spec URL**: https://github.com/zarr-conventions/dggs/blob/v1/README.md
 - **Extension Maturity Classification**: Proposal
 - **Owner**: @keewis
 
 ## Description
 
 This convention describes a JSON object that encodes the coordinate and grid parameters of a discrete global grid system (DGGS) under the `dggs` key in the attributes of zarr groups and arrays.
+
+It is inspired by the CF conventions' `healpix` grid mapping (first included in version 1.13), but deliberately makes different choices in some cases to be more broadly useful in the zarr ecosystem.
 
 ## Inheritance Model
 
@@ -41,7 +43,7 @@ Object representing the conrete instance of the discrete global grid system.
 - **Type**: `object`
 - **Required**: &#10003; Yes
 
-This field SHALL describe the concrete instance of the discrete global grid system. See the [DGGS Object](#dggs-object) section below for details.
+This field MUST describe the concrete instance of the discrete global grid system. See the [DGGS Object](#dggs-object) section below for details.
 
 ### DGGS Object
 
@@ -52,9 +54,9 @@ This field SHALL describe the concrete instance of the discrete global grid syst
 | **ellipsoid**         | `object`  | The ellipsoid used as a reference body.      | &#10005; No  | [ellipsoid](#ellipsoid)                 |
 | **spatial_dimension** | `string`  | Name of the spatial dimension                | &#10003; Yes | [spatial_dimension](#spatial_dimension) |
 | **coordinate**        | `string`  | Name of the coordinate                       | &#10005; No  | [coordinate](#coordinate)               |
-| **compression**       | `string`  | Compression type of the coordinate           | &#10003; Yes | [compression](#compression)             |
+| **compression**       | `string`  | Compression type of the coordinate           | Conditional  | [compression](#compression)             |
 
-Additional DGGS-specific parameters are allowed.
+Additional DGGS-specific parameters are allowed (see [DGGS specific parameters](dggs-specific-parameters)).
 
 #### name
 
@@ -79,7 +81,7 @@ The ellipsoid describes the reference system of the DGGS. See the [ellipsoid obj
 - **Type**: `object`
 - **Required**: &#10005; No
 
-If not given, a sphere with a radius of `6370997 m` SHALL be assumed.
+If not given, a sphere with a radius of `6370997 m` MUST be assumed.
 
 #### spatial_dimension
 
@@ -97,12 +99,12 @@ The name of spatial dimension.
 
 #### compression
 
-`compression` describes the cell id compression method chosen. It SHALL only be provided if the `coordinate` was provided. If `refinement_level` is `null`, `compression` SHALL be `"none"`.
+`compression` describes the cell id compression method chosen. It MUST only be provided if the `coordinate` was provided. If `refinement_level` is `null`, `compression` MUST be `"none"`.
 
-Uncompressing the cell ids SHALL result in an array of the same length as the `spatial_dimension`.
+Uncompressing the cell ids MUST result in an array of the same length as the `spatial_dimension`.
 
 - **Type**: `string`
-- **Required**: &#10005; No
+- **Required**: Conditional
 
 The following values are possible:
 
@@ -118,21 +120,37 @@ In all cases, the **name** must exactly correspond to the names used by the [pro
 
 #### Sphere
 
-|            | Type     | Description                       | Required |
-| ---------- | -------- | --------------------------------- | -------- |
-| **name**   | `string` | Human-readable name of the sphere | Yes      |
-| **radius** | `number` | The radius of the sphere          | Yes      |
+|            | Type     | Description                       | Required     |
+| ---------- | -------- | --------------------------------- | ------------ |
+| **name**   | `string` | Human-readable name of the sphere | &#10003; Yes |
+| **radius** | `number` | The radius of the sphere          | &#10003; Yes |
 
 #### Ellipsoid
 
-|                        | Type     | Description                             | Required    |
-| ---------------------- | -------- | --------------------------------------- | ----------- |
-| **name**               | `string` | Human-readable name of the ellipsoid    | Yes         |
-| **semi_major_axis**    | `number` | The semimajor axis of the ellipsoid     | Yes         |
-| **semi_minor_axis**    | `number` | The semiminor axis of the ellipsoid     | Conditional |
-| **inverse_flattening** | `number` | The inverse flattening of the ellipsoid | Conditional |
+|                        | Type     | Description                             | Required     |
+| ---------------------- | -------- | --------------------------------------- | ------------ |
+| **name**               | `string` | Human-readable name of the ellipsoid    | &#10003; Yes |
+| **semi_major_axis**    | `number` | The semimajor axis of the ellipsoid     | &#10003; Yes |
+| **semi_minor_axis**    | `number` | The semiminor axis of the ellipsoid     | Conditional  |
+| **inverse_flattening** | `number` | The inverse flattening of the ellipsoid | Conditional  |
 
 `semi_minor_axis` and `inverse_flattening` are mutually exclusive.
+
+### DGGS specific parameters
+
+Some DGGS have parameters other than `refinement_level`, which can be added to the `dggs` object. In this section are standardized extensions for common DGGS
+
+#### HEALPix
+
+The HEALPix DGGS (`"name": "healpix"`) has one additional required parameter:
+
+|                     | Type     | Description             | Required     |
+| ------------------- | -------- | ----------------------- | ------------ |
+| **indexing_scheme** | `string` | HEALPix indexing scheme | &#10003; Yes |
+
+The **indexing_scheme** parameter describes the space-filling curve used to index the cells. For values other than `ring` or `nested` the `refinement_level` must be `null`.
+
+Known values are: `nested`, `ring`, `zuniq`, `nuniq` (but there are many more where the name matches `[a-z_]*uniq`).
 
 ## Examples
 
