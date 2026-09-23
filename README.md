@@ -72,7 +72,7 @@ Also called the "depth" or "order", this parameter describes the size of the DGG
 - **Type**: `integer | null`
 - **Required**: &#10003; Yes
 
-It MUST only be `null` if the associated coordinate is variable-sized.
+It MUST NOT be `null` unless the associated coordinate describes variable-sized cells.
 
 #### ellipsoid
 
@@ -85,7 +85,7 @@ If not given, a sphere with a radius of `6370997 m` MUST be assumed.
 
 #### spatial_dimension
 
-The name of spatial dimension.
+The name of the spatial dimension.
 
 - **Type**: `string`
 - **Required**: &#10003; Yes
@@ -99,14 +99,14 @@ The name of spatial dimension.
 
 #### compression
 
-`compression` describes the cell id compression method chosen. It MUST only be provided if the `coordinate` was provided. If `refinement_level` is `null`, `compression` MUST be `"none"`.
+`compression` describes the cell id compression method chosen. It MUST be provided when the `coordinate` was provided, and MUST be missing otherwise. If `refinement_level` is `null`, `compression` MUST be `"none"`.
 
 Uncompressing the cell ids MUST result in an array of the same length as the `spatial_dimension`.
 
 - **Type**: `string`
 - **Required**: Conditional
 
-The following values are possible:
+The following values are supported:
 
 - `"none"`: the array referenced by `coordinate` MUST be 1-dimensional and have the same size as the `spatial_dimension`.
 - `"compacted"`: the array referenced by `coordinate` MUST be 1-dimensional.
@@ -161,8 +161,8 @@ The **indexing_scheme** parameter describes the space-filling curve used to inde
 
 Known values are:
 
-- the base indexing schemes: `nested` and `ring` (the base indexing schemes). `"refinement_level"` must be an integer between 0 and 29.
-- indexing schemes that encode the refinement level in the cell ids: `zuniq`, `nuniq`, and many others ending with `uniq`). `"refinement_level"` must be null.
+- `nested` and `ring` (the base indexing schemes). `"refinement_level"` must be an integer between 0 and 29.
+- indexing schemes that encode the refinement level in the cell ids: `zuniq`, `nuniq`, and many others ending with `uniq`). `"refinement_level"` MUST be an integer between 0 and 29 to indicate constant-sized cells, and MUST be `null` otherwise.
 
 Additional indexing schemes are allowed, with no restrictions on the value of `"refinement_level"`.
 
